@@ -1,0 +1,153 @@
+
+<!--  <mat-grid-tile colspan="2">-->
+
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Stats</mat-card-title>
+        <mat-card-subtitle>T20</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table matSort [dataSource]="tableDataSource" class="mat-elevation-z8">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name</th>
+            <td mat-cell *matCellDef="let element"> {{ element.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="matches">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Matches</th>
+            <td mat-cell *matCellDef="let element"> {{ element.matches }}</td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="innings">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Innings</th>
+            <td mat-cell *matCellDef="let element"> {{ element.innings }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="overs">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Overs</th>
+            <td mat-cell *matCellDef="let element"> {{ element.overs }}</td>
+          </ng-container>
+          <ng-container matColumnDef="runs">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Runs</th>
+            <td mat-cell *matCellDef="let element"> {{ element.runs }}</td>
+          </ng-container>
+          <ng-container matColumnDef="wickets">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Wickets</th>
+            <td mat-cell *matCellDef="let element"> {{ element.wickets }}</td>
+          </ng-container>
+          <ng-container matColumnDef="bbf">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> BBF</th>
+            <td mat-cell *matCellDef="let element"> {{ element.bbf }}</td>
+          </ng-container>
+          <ng-container matColumnDef="maidens">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Maidens</th>
+            <td mat-cell *matCellDef="let element"> {{ element.maidens }}</td>
+          </ng-container>
+          <ng-container matColumnDef="dots">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Dots</th>
+            <td mat-cell *matCellDef="let element"> {{ element.dots }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="economy">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Economy</th>
+            <td mat-cell *matCellDef="let element"> {{ element.economy| number: '1.2-2' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="average">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Average</th>
+            <td mat-cell *matCellDef="let element"> {{ element.average| number: '1.2-2' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="strikeRate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Strike Rate</th>
+            <td mat-cell *matCellDef="let element"> {{ element.strikeRate | number: '1.2-2' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="hatTrick">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Hat Trick</th>
+            <td mat-cell *matCellDef="let element"> {{ element.hatTrick }}</td>
+          </ng-container>
+          <ng-container matColumnDef="fourWickets">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> 4 Wickets</th>
+            <td mat-cell *matCellDef="let element"> {{ element.fourWickets }}</td>
+          </ng-container>
+          <ng-container matColumnDef="fiveWickets">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> 5 Wickets</th>
+            <td mat-cell *matCellDef="let element"> {{ element.fiveWickets }}</td>
+          </ng-container>
+          <ng-container matColumnDef="wides">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Wides</th>
+            <td mat-cell *matCellDef="let element"> {{ element.wides }}</td>
+          </ng-container>
+          <ng-container matColumnDef="noBalls">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> No Balls</th>
+            <td mat-cell *matCellDef="let element"> {{ element.noBalls }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </mat-card-content>
+
+    </mat-card>
+<!--  </mat-grid-tile>-->
+  <mat-grid-list cols="2" rowHeight="2:1">
+  <mat-grid-tile>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Stats</mat-card-title>
+        <mat-card-subtitle>First 6 Overs</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-bar-vertical-2d
+          [view]="view"
+          [scheme]="colorScheme"
+          [results]="bowlerChartStatsFor6Overs"
+          [gradient]="gradient"
+          [xAxis]="showXAxis"
+          [yAxis]="showYAxis"
+          [legend]="showLegend"
+          [showXAxisLabel]="showXAxisLabel"
+          [showYAxisLabel]="showYAxisLabel"
+          [xAxisLabel]="xAxisLabel"
+          [yAxisLabel]="yAxisLabel"
+          [wrapTicks]="true"
+          (select)="onSelect($event)"
+          (activate)="onActivate($event)"
+          (deactivate)="onDeactivate($event)"
+        >
+
+        </ngx-charts-bar-vertical-2d>
+      </mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Stats</mat-card-title>
+        <mat-card-subtitle>Overs</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-bar-vertical-2d
+          [view]="view"
+          [scheme]="colorScheme"
+          [results]="bowlerChartStats"
+          [gradient]="gradient"
+          [xAxis]="showXAxis"
+          [yAxis]="showYAxis"
+          [legend]="showLegend"
+          [showXAxisLabel]="showXAxisLabel"
+          [showYAxisLabel]="showYAxisLabel"
+          [xAxisLabel]="xAxisLabel"
+          [yAxisLabel]="yAxisLabel"
+          [wrapTicks]="true"
+          (select)="onSelect($event)"
+          (activate)="onActivate($event)"
+          (deactivate)="onDeactivate($event)"
+        >
+
+        </ngx-charts-bar-vertical-2d>
+      </mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>
