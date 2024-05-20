@@ -10,17 +10,17 @@ export interface CustomRoute extends Route {
 
 export declare type CustomRoutes = CustomRoute[];
 export const routes: CustomRoutes = [
-  { path: '', component: MatchComponent, icon: 'home', displayName: 'Home' },
+  { path: '', component: MatchComponent, icon: 'home', displayName: 'Matches' },
   {
     path: 'stats',
     component: BaseComponent,
-    icon: 'home',
+    icon: 'view_timeline',
     displayName: 'Stats',
   },
   {
     path: 't20-charts',
     component: StatsComponent,
-    icon: 'home',
+    icon: 'bolt',
     displayName: 'T20 Charts',
   },
 ];
