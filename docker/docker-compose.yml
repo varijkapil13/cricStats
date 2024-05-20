@@ -1,0 +1,24 @@
+version: '3'
+
+volumes:
+  koelncc-postgres-data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: koelncc_postgres
+    restart: always
+    healthcheck:
+      test: [ "CMD", "nc", "-zv", "localhost", "5432" ]
+      interval: 1s
+      timeout: 10s
+    environment:
+      POSTGRES_PASSWORD: koelncc
+      POSTGRES_USER: koelncc
+      POSTGRES_DB: koelncc
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres_mount:/docker-entrypoint-initdb.d/
+      - koelncc-postgres-data:/var/lib/postgresql/data/

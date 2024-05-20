@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Excel } from '../modal/Excel';
 import { Bowler } from '../modal/Bowler';
 import { BowlerTableStats } from '../modal/BowlerTableStats';
-import { Match } from '../modal/Match';
-import { WicketType } from '../modal/BallBowledInAMatch';
+import { MatchInfo, OversInMatch } from '../modal/Match';
+import { BallBowled } from '../modal/BallBowled';
 import { BowlerChartStats } from '../modal/BowlerChartStats';
 
 @Injectable({
@@ -12,10 +11,12 @@ import { BowlerChartStats } from '../modal/BowlerChartStats';
 export class CalculatorService {
   constructor() {}
 
-  generateBowlerStats(excel: Excel, bowlers: Bowler[]): BowlerTableStats[] {
+  generateBowlerStats(
+    matches: MatchInfo[],
+    bowlers: Bowler[],
+  ): BowlerTableStats[] {
     let bowlerStats: BowlerTableStats[] = [];
     for (const bowler of bowlers) {
-      let matches = excel.matches;
       bowlerStats.push({
         average: this.calculateAverageForBowler(bowler, matches),
         dots: this.calculateDotsForBowler(bowler, matches),
@@ -42,18 +43,16 @@ export class CalculatorService {
   }
 
   generateBowlerStatsForFirstSixOvers(
-    excel: Excel,
+    matches: MatchInfo[],
     bowlers: Bowler[],
   ): BowlerTableStats[] {
     let bowlerStats: BowlerTableStats[] = [];
-    let matches = excel.matches;
     // filter out ballsBowled where over <= 6
     matches.forEach((match) => {
-      match.ballsBowled = match.ballsBowled.filter((ball) => {
+      match.ballsBowled = match.ballsBowled.filter((ball: BallBowled) => {
         return ball.over <= 5;
       });
     });
-    console.log(matches);
 
     for (const bowler of bowlers) {
       bowlerStats.push({
@@ -113,156 +112,185 @@ export class CalculatorService {
 
   private calculateNoOfMatchesForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // find how many Match objects contain at least 1 ballsBowled from where playerName === bowler.initials
-    return matches.filter((match: Match) => {
-      return match.ballsBowled.some((ballBowled) => {
-        return ballBowled.bowlerName === bowler.initials;
+    return matches.filter((match: MatchInfo) => {
+      return match.ballsBowled.some((ballBowled: BallBowled) => {
+        return ballBowled.bowler === bowler.initials;
       });
     }).length;
   }
 
   private calculateNoOfInningsForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // find how many Match objects contain at least 1 ballsBowled from where playerName === bowler.initials
-    return matches.filter((match: Match) => {
-      return match.ballsBowled.some((ballBowled) => {
-        return ballBowled.bowlerName === bowler.initials;
+    return matches.filter((match: MatchInfo) => {
+      return match.ballsBowled.some((ballBowled: BallBowled) => {
+        return ballBowled.bowler === bowler.initials;
       });
     }).length;
   }
 
-  private calculateRunsForBowler(bowler: Bowler, matches: Match[]): number {
+  private calculateRunsForBowler(bowler: Bowler, matches: MatchInfo[]): number {
     // sum of runs from oversInMatch where bowlerName === bowler.initials
     return matches.reduce((totalRuns, match) => {
       return (
         totalRuns +
-        match.oversInMatch.reduce((totalRunsInMatch, over) => {
-          return (
-            totalRunsInMatch +
-            (over.bowlerName === bowler.initials ? over.runs : 0)
-          );
-        }, 0)
+        match.oversInMatch.reduce(
+          (totalRunsInMatch: number, over: OversInMatch) => {
+            return (
+              totalRunsInMatch +
+              (over.bowlerName === bowler.initials ? over.runs : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
-  private calculateWicketsForBowler(bowler: Bowler, matches: Match[]): number {
+  private calculateWicketsForBowler(
+    bowler: Bowler,
+    matches: MatchInfo[],
+  ): number {
     // sum of wickets from ballsBowled where bowlerName === bowler.initials and WicketType !== 'run out'
     return matches.reduce((totalWickets, match) => {
       return (
         totalWickets +
-        match.ballsBowled.reduce((totalWicketsInMatch, ballBowled) => {
-          return (
-            totalWicketsInMatch +
-            (ballBowled.bowlerName === bowler.initials &&
-            ballBowled.wicket &&
-            ballBowled.wicketType !== WicketType.RunOut
-              ? 1
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalWicketsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalWicketsInMatch +
+              (ballBowled.bowler === bowler.initials &&
+              ballBowled.wicket &&
+              ballBowled.wicketType !== 'RUNOUT'
+                ? 1
+                : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
-  private calculateMaidensForBowler(bowler: Bowler, matches: Match[]): number {
+  private calculateMaidensForBowler(
+    bowler: Bowler,
+    matches: MatchInfo[],
+  ): number {
     // sum of maidens from oversInMatch where bowlerName === bowler.initials
     return matches.reduce((totalMaidens, match) => {
       return (
         totalMaidens +
-        match.oversInMatch.reduce((totalMaidensInMatch, over) => {
-          return (
-            totalMaidensInMatch +
-            (over.bowlerName === bowler.initials && over.maiden ? 1 : 0)
-          );
-        }, 0)
+        match.oversInMatch.reduce(
+          (totalMaidensInMatch: number, over: OversInMatch) => {
+            return (
+              totalMaidensInMatch +
+              (over.bowlerName === bowler.initials && over.maiden ? 1 : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
-  private calculateNoBallsForBowler(bowler: Bowler, matches: Match[]): number {
+  private calculateNoBallsForBowler(
+    bowler: Bowler,
+    matches: MatchInfo[],
+  ): number {
     // sum of noBalls from ballsBowled where bowlerName === bowler.initials
     return matches.reduce((totalNoBalls, match) => {
       return (
         totalNoBalls +
-        match.ballsBowled.reduce((totalNoBallsInMatch, ballBowled) => {
-          return (
-            totalNoBallsInMatch +
-            (ballBowled.bowlerName === bowler.initials && ballBowled.noBall
-              ? 1
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalNoBallsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalNoBallsInMatch +
+              (ballBowled.bowler === bowler.initials && ballBowled.noBall
+                ? 1
+                : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
-  private calculateWidesForBowler(bowler: Bowler, matches: Match[]): number {
+  private calculateWidesForBowler(
+    bowler: Bowler,
+    matches: MatchInfo[],
+  ): number {
     // sum of wides from ballsBowled where bowlerName === bowler.initials
     return matches.reduce((totalWides, match) => {
       return (
         totalWides +
-        match.ballsBowled.reduce((totalWidesInMatch, ballBowled) => {
-          return (
-            totalWidesInMatch +
-            (ballBowled.bowlerName === bowler.initials && ballBowled.wide
-              ? 1
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalWidesInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalWidesInMatch +
+              (ballBowled.bowler === bowler.initials && ballBowled.wide ? 1 : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
-  private calculateDotsForBowler(bowler: Bowler, matches: Match[]): number {
+  private calculateDotsForBowler(bowler: Bowler, matches: MatchInfo[]): number {
     // sum of dots from ballsBowled where bowlerName === bowler.initials
     return matches.reduce((totalDots, match) => {
       return (
         totalDots +
-        match.ballsBowled.reduce((totalDotsInMatch, ballBowled) => {
-          return (
-            totalDotsInMatch +
-            (ballBowled.bowlerName === bowler.initials &&
-            ballBowled.runsScored === 0
-              ? 1
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalDotsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalDotsInMatch +
+              (ballBowled.bowler === bowler.initials && ballBowled.runs === 0
+                ? 1
+                : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
   private calculateHatTricksForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // sum of hatTricks from oversInMatch where bowlerName === bowler.initials
     return matches.reduce((totalHatTricks, match) => {
       return (
         totalHatTricks +
-        match.oversInMatch.reduce((totalHatTricksInMatch, over) => {
-          return (
-            totalHatTricksInMatch +
-            (over.bowlerName === bowler.initials && over.hatTrick ? 1 : 0)
-          );
-        }, 0)
+        match.oversInMatch.reduce(
+          (totalHatTricksInMatch: number, over: OversInMatch) => {
+            return (
+              totalHatTricksInMatch +
+              (over.bowlerName === bowler.initials && over.hatTrick ? 1 : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }
 
   private calculateFourWicketsForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // return true when sum of wickets in a match = 4 where bowlerName === bowler.initials
     let fourWickets = 0;
     for (const match of matches) {
-      let wickets = 0;
-      let playerOvers = match.oversInMatch.filter((over) => {
+      let playerOvers = match.oversInMatch.filter((over: OversInMatch) => {
         return over.bowlerName === bowler.initials;
       });
       // sum of wickets in player overs
@@ -279,13 +307,12 @@ export class CalculatorService {
 
   private calculateFiveWicketsForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // return true when sum of wickets in a match = 4 where bowlerName === bowler.initials
     let fiveWickets = 0;
     for (const match of matches) {
-      let wickets = 0;
-      let playerOvers = match.oversInMatch.filter((over) => {
+      let playerOvers = match.oversInMatch.filter((over: OversInMatch) => {
         return over.bowlerName === bowler.initials;
       });
       // sum of wickets in player overs
@@ -302,32 +329,38 @@ export class CalculatorService {
 
   private calculateStrikeRateForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // sum of wickets from ballsBowled where bowlerName === bowler.initials
     let wickets = matches.reduce((totalWickets, match) => {
       return (
         totalWickets +
-        match.ballsBowled.reduce((totalWicketsInMatch, ballBowled) => {
-          return (
-            totalWicketsInMatch +
-            (ballBowled.bowlerName === bowler.initials && ballBowled.wicket
-              ? 1
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalWicketsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalWicketsInMatch +
+              (ballBowled.bowler === bowler.initials && ballBowled.wicket
+                ? 1
+                : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
     // sum of balls from ballsBowled where bowlerName === bowler.initials
     let ballsBowled = matches.reduce((totalBalls, match) => {
       return (
         totalBalls +
-        match.ballsBowled.reduce((totalBallsInMatch, ballBowled) => {
-          return (
-            totalBallsInMatch +
-            (ballBowled.bowlerName === bowler.initials ? 1 : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalBallsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalBallsInMatch +
+              (ballBowled.bowler === bowler.initials ? 1 : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
     // strikeRate = balls / wickets
@@ -337,33 +370,41 @@ export class CalculatorService {
     }
     return ballsBowled / wickets;
   }
-  private calculateAverageForBowler(bowler: Bowler, matches: Match[]): number {
+
+  private calculateAverageForBowler(
+    bowler: Bowler,
+    matches: MatchInfo[],
+  ): number {
     // sum of runs from ballsBowled where bowlerName === bowler.initials
     let runs = matches.reduce((totalRuns, match) => {
       return (
         totalRuns +
-        match.ballsBowled.reduce((totalRunsInMatch, ballBowled) => {
-          return (
-            totalRunsInMatch +
-            (ballBowled.bowlerName === bowler.initials
-              ? ballBowled.runsScored
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalRunsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalRunsInMatch +
+              (ballBowled.bowler === bowler.initials ? ballBowled.runs : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
     // sum of wickets from ballsBowled where bowlerName === bowler.initials
     let wickets = matches.reduce((totalWickets, match) => {
       return (
         totalWickets +
-        match.ballsBowled.reduce((totalWicketsInMatch, ballBowled) => {
-          return (
-            totalWicketsInMatch +
-            (ballBowled.bowlerName === bowler.initials && ballBowled.wicket
-              ? 1
-              : 0)
-          );
-        }, 0)
+        match.ballsBowled.reduce(
+          (totalWicketsInMatch: number, ballBowled: BallBowled) => {
+            return (
+              totalWicketsInMatch +
+              (ballBowled.bowler === bowler.initials && ballBowled.wicket
+                ? 1
+                : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
     // average = runs / wickets
@@ -373,17 +414,24 @@ export class CalculatorService {
     }
     return runs / wickets;
   }
-  private calculateEconomyForBowler(bowler: Bowler, matches: Match[]): number {
+
+  private calculateEconomyForBowler(
+    bowler: Bowler,
+    matches: MatchInfo[],
+  ): number {
     // sum of runs from oversInMatch where bowlerName === bowler.initials
     let sumOfRuns = matches.reduce((totalRuns, match) => {
       return (
         totalRuns +
-        match.oversInMatch.reduce((totalRunsInMatch, over) => {
-          return (
-            totalRunsInMatch +
-            (over.bowlerName === bowler.initials ? over.runs : 0)
-          );
-        }, 0)
+        match.oversInMatch.reduce(
+          (totalRunsInMatch: number, over: OversInMatch) => {
+            return (
+              totalRunsInMatch +
+              (over.bowlerName === bowler.initials ? over.runs : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
 
@@ -397,19 +445,23 @@ export class CalculatorService {
     }
     return sumOfRuns / sumOfOvers;
   }
+
   private calculateOversBowledForBowler(
     bowler: Bowler,
-    matches: Match[],
+    matches: MatchInfo[],
   ): number {
     // sum of overs from oversInMatch where bowlerName === bowler.initials
     return matches.reduce((totalOvers, match) => {
       return (
         totalOvers +
-        match.oversInMatch.reduce((totalOversInMatch, over) => {
-          return (
-            totalOversInMatch + (over.bowlerName === bowler.initials ? 1 : 0)
-          );
-        }, 0)
+        match.oversInMatch.reduce(
+          (totalOversInMatch: number, over: OversInMatch) => {
+            return (
+              totalOversInMatch + (over.bowlerName === bowler.initials ? 1 : 0)
+            );
+          },
+          0,
+        )
       );
     }, 0);
   }

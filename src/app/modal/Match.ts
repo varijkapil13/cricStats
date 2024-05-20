@@ -1,25 +1,36 @@
-import { BallBowledInAMatch, WicketType } from './BallBowledInAMatch';
+import { BallBowled } from './BallBowled';
 
-interface IMatch {
-  ballsBowled: BallBowledInAMatch[];
+export interface IMatch {
+  id: number;
+  date: string;
+  format: string;
+  location: string;
+  against: string;
+  type: string;
+  team: string;
+}
+
+interface IMatchInfo {
+  match: IMatch;
+  ballsBowled: BallBowled[];
   readonly oversInMatch?: OversInMatch[];
 }
 
-export class Match implements IMatch {
-  constructor(ballsBowled: BallBowledInAMatch[]) {
+export class MatchInfo implements IMatchInfo {
+  constructor(match: IMatch, ballsBowled: BallBowled[]) {
+    this.match = match;
     this.ballsBowled = ballsBowled;
+    this.oversInMatch = convertBallBowledInMatchToOversInMatch(ballsBowled);
   }
 
-  public ballsBowled: BallBowledInAMatch[] = [];
-
-  get oversInMatch(): OversInMatch[] {
-    return convertBallBowledInMatchToOversInMatch(this.ballsBowled);
-  }
+  public match: IMatch;
+  public ballsBowled: BallBowled[] = [];
+  public oversInMatch: OversInMatch[];
 }
 
 export interface OversInMatch {
   over: number;
-  balls: BallBowledInAMatch[];
+  balls: BallBowled[];
   bowlerName: string;
   runs: number;
   wickets: number;
@@ -35,11 +46,11 @@ export interface OversInMatch {
 }
 
 function convertBallBowledInMatchToOversInMatch(
-  ballsBowled: BallBowledInAMatch[],
+  ballsBowled: BallBowled[],
 ): OversInMatch[] {
   let oversInMatch: OversInMatch[] = [];
   let over: number = 0;
-  let balls: BallBowledInAMatch[] = [];
+  let balls: BallBowled[] = [];
   let bowlerName: string = '';
   let runs: number = 0;
   let wickets: number = 0;
@@ -60,8 +71,8 @@ function convertBallBowledInMatchToOversInMatch(
 
     if (ball.over === over) {
       balls.push(ball);
-      runs += ball.runsScored;
-      if (ball.wicket && ball.wicketType !== WicketType.RunOut) {
+      runs += ball.runs;
+      if (ball.wicket && ball.wicketType !== 'RUNOUT') {
         wickets++;
       }
       if (ball.wide) {
@@ -70,16 +81,16 @@ function convertBallBowledInMatchToOversInMatch(
       if (ball.noBall) {
         noBall++;
       }
-      if (ball.legBye > 0) {
+      if (ball.legBye != null && ball.legBye > 0) {
         legBye += ball.legBye;
       }
-      if (ball.bye > 0) {
+      if (ball.bye != null && ball.bye > 0) {
         bye += ball.bye;
       }
-      if (ball.extraRuns > 0) {
+      if (ball.extraRuns != null && ball.extraRuns > 0) {
         extraRuns += ball.extraRuns;
       }
-      if (ball.runsScored === 0) {
+      if (ball.runs === 0) {
         dots++;
       }
       if (ball.wicket) {
@@ -107,16 +118,17 @@ function convertBallBowledInMatchToOversInMatch(
       });
       over = ball.over;
       balls = [ball];
-      bowlerName = ball.bowlerName;
-      runs = ball.runsScored;
-      wickets = ball.wicket && ball.wicketType !== WicketType.RunOut ? 1 : 0;
+      bowlerName = ball.bowler;
+      runs = ball.runs;
+      wickets = ball.wicket && ball.wicketType !== 'RUNOUT' ? 1 : 0;
       wide = ball.wide ? 1 : 0;
       noBall = ball.noBall ? 1 : 0;
-      legBye = ball.legBye;
-      bye = ball.bye;
-      extraRuns = ball.extraRuns;
+      legBye = ball.legBye != null && ball.legBye > 0 ? ball.legBye : 0;
+      bye = ball.bye != null && ball.bye > 0 ? ball.bye : 0;
+      extraRuns =
+        ball.extraRuns != null && ball.extraRuns > 0 ? ball.extraRuns : 0;
       economy = 0;
-      dots = ball.runsScored === 0 ? 1 : 0;
+      dots = ball.runs === 0 ? 1 : 0;
       hatTrick = false;
     }
   }

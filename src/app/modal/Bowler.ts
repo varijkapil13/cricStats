@@ -2,6 +2,7 @@ export interface Bowler {
   id: number;
   firstName: string;
   lastName: string;
+  team: string;
   initials: string;
 }
 

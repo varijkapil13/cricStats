@@ -7,8 +7,6 @@ import {
   MatCardTitle,
 } from '@angular/material/card';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { ExcelService } from '../excel/excel.service';
-import { Excel } from '../modal/Excel';
 import {
   MatCell,
   MatCellDef,
@@ -19,7 +17,6 @@ import {
   MatHeaderRowDef,
   MatRow,
   MatRowDef,
-  MatTable,
   MatTableDataSource,
   MatTableModule,
 } from '@angular/material/table';
@@ -28,6 +25,9 @@ import { CalculatorService } from '../calculator/calculator.service';
 import { MatSort, MatSortHeader, MatSortModule } from '@angular/material/sort';
 import { BowlerChartStats } from '../modal/BowlerChartStats';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { generateInfoForEachMatch } from '../modal/data/DataGenerator';
+import { MatchInfo } from '../modal/Match';
+import { bowlerData } from '../modal/data/bowlerData';
 
 @Component({
   selector: 'app-stats',
@@ -58,49 +58,6 @@ import { MatGridList, MatGridTile } from '@angular/material/grid-list';
   styleUrl: './stats.component.css',
 })
 export class StatsComponent implements AfterViewInit {
-  multi = [
-    {
-      name: 'Germany',
-      series: [
-        {
-          name: '2010',
-          value: 7300000,
-        },
-        {
-          name: '2011',
-          value: 8940000,
-        },
-      ],
-    },
-
-    {
-      name: 'USA',
-      series: [
-        {
-          name: '2010',
-          value: 7870000,
-        },
-        {
-          name: '2011',
-          value: 8270000,
-        },
-      ],
-    },
-
-    {
-      name: 'France',
-      series: [
-        {
-          name: '2010',
-          value: 5000002,
-        },
-        {
-          name: '2011',
-          value: 5800000,
-        },
-      ],
-    },
-  ];
   view: [number, number] = [700, 400];
 
   // options
@@ -114,7 +71,7 @@ export class StatsComponent implements AfterViewInit {
   xAxisLabel = 'Bowler';
   colorScheme = 'cool';
 
-  json: Excel | undefined;
+  matchInfo: MatchInfo[];
   @ViewChild(MatSort) sort: MatSort;
   bowlerStats: BowlerTableStats[] = [];
   tableDataSource: MatTableDataSource<BowlerTableStats> =
@@ -141,37 +98,28 @@ export class StatsComponent implements AfterViewInit {
     'noBalls',
   ];
 
-  constructor(
-    private excelService: ExcelService,
-    private calculatorService: CalculatorService,
-  ) {
-    this.getExcelData().then(() => {
-      if (this.json) {
-        this.bowlerStats = calculatorService.generateBowlerStats(
-          this.json,
-          this.json.bowlers,
-        );
-        this.tableDataSource = new MatTableDataSource(this.bowlerStats);
-        this.bowlerStatsFor6Overs =
-          calculatorService.generateBowlerStatsForFirstSixOvers(
-            this.json,
-            this.json.bowlers,
-          );
-        this.bowlerChartStatsFor6Overs =
-          calculatorService.convertStatsToChartData(this.bowlerStatsFor6Overs);
-        this.bowlerChartStats = calculatorService.convertStatsToChartData(
-          this.bowlerStats,
-        );
-      }
-    });
+  constructor(private calculatorService: CalculatorService) {
+    this.matchInfo = generateInfoForEachMatch();
+    this.bowlerStats = calculatorService.generateBowlerStats(
+      this.matchInfo,
+      bowlerData,
+    );
+    this.tableDataSource = new MatTableDataSource(this.bowlerStats);
+    this.bowlerStatsFor6Overs =
+      calculatorService.generateBowlerStatsForFirstSixOvers(
+        this.matchInfo,
+        bowlerData,
+      );
+    this.bowlerChartStatsFor6Overs = calculatorService.convertStatsToChartData(
+      this.bowlerStatsFor6Overs,
+    );
+    this.bowlerChartStats = calculatorService.convertStatsToChartData(
+      this.bowlerStats,
+    );
   }
 
   ngAfterViewInit() {
     this.tableDataSource.sort = this.sort;
-  }
-
-  async getExcelData() {
-    this.json = await this.excelService.readExcelToJson();
   }
 
   onSelect(data: any): void {
