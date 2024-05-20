@@ -1,109 +1,75 @@
-<div class="flex flex-row">
-  <mat-card class="basis-full">
-    <mat-card-header>
-      <mat-card-title>Stats</mat-card-title>
-      <mat-card-subtitle>T20</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <table [dataSource]="tableDataSource" mat-table matSort>
-
-        <ng-container matColumnDef="id">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Name</th>
-          <td *matCellDef="let element" mat-cell> {{ element.id }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="matches">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Matches</th>
-          <td *matCellDef="let element" mat-cell> {{ element.matches }}</td>
-        </ng-container>
-
-
-        <ng-container matColumnDef="overs">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Overs</th>
-          <td *matCellDef="let element" mat-cell> {{ element.overs }}</td>
-        </ng-container>
-        <ng-container matColumnDef="runs">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Runs</th>
-          <td *matCellDef="let element" mat-cell> {{ element.runs }}</td>
-        </ng-container>
-        <ng-container matColumnDef="wickets">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Wickets</th>
-          <td *matCellDef="let element" mat-cell> {{ element.wickets }}</td>
-        </ng-container>
-        <ng-container matColumnDef="bbf">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> BBF</th>
-          <td *matCellDef="let element" mat-cell> {{ element.bbf }}</td>
-        </ng-container>
-        <ng-container matColumnDef="maidens">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Maidens</th>
-          <td *matCellDef="let element" mat-cell> {{ element.maidens }}</td>
-        </ng-container>
-        <ng-container matColumnDef="dots">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Dots</th>
-          <td *matCellDef="let element" mat-cell> {{ element.dots }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="economy">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Economy</th>
-          <td *matCellDef="let element" mat-cell> {{ element.economy | number: '1.2-2' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="average">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Average</th>
-          <td *matCellDef="let element" mat-cell> {{ element.average| number: '1.2-2' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="strikeRate">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Strike Rate</th>
-          <td *matCellDef="let element" mat-cell> {{ element.strikeRate | number: '1.2-2' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="hatTrick">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Hat Trick</th>
-          <td *matCellDef="let element" mat-cell> {{ element.hatTrick }}</td>
-        </ng-container>
-        <ng-container matColumnDef="fourWickets">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> 4 Wickets</th>
-          <td *matCellDef="let element" mat-cell> {{ element.fourWickets }}</td>
-        </ng-container>
-        <ng-container matColumnDef="fiveWickets">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> 5 Wickets</th>
-          <td *matCellDef="let element" mat-cell> {{ element.fiveWickets }}</td>
-        </ng-container>
-        <ng-container matColumnDef="wides">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> Wides</th>
-          <td *matCellDef="let element" mat-cell> {{ element.wides }}</td>
-        </ng-container>
-        <ng-container matColumnDef="noBalls">
-          <th *matHeaderCellDef mat-header-cell mat-sort-header> No Balls</th>
-          <td *matCellDef="let element" mat-cell> {{ element.noBalls }}</td>
-        </ng-container>
-
-        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
-      </table>
-    </mat-card-content>
-  </mat-card>
-  <!--  </mat-grid-tile>-->
-</div>
 <div class="flex flex-row p-2">
   <mat-card class="basis-1/2">
     <mat-card-header>
-      <mat-card-title>First 6 Overs</mat-card-title>
+      <mat-card-title>Powerplay</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="bowlerChartStatsFor6Overs"
+      <canvas [data]="getChartData(CHART_CONFIGS.t20PowerPlay)"
               [type]="'bar'"
               baseChart>
 
       </canvas>
     </mat-card-content>
   </mat-card>
+  <mat-card class="basis-1/2">
+    <mat-card-header>
+      <mat-card-title>Death</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <canvas [data]="getChartData(CHART_CONFIGS.t20Death)"
+              [type]="'bar'"
+              baseChart>
 
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div class="flex flex-row p-2">
   <mat-card class="basis-1/2">
     <mat-card-header>
       <mat-card-title>All Overs</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="bowlerChartStats"
+      <canvas [data]="getChartData(CHART_CONFIGS.t20All)"
               [type]="'bar'"
+              baseChart>
+
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div class="flex flex-row p-2">
+  <mat-card class="basis-1/3">
+    <mat-card-header>
+      <mat-card-title>T20 Wides in Powerplay</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <canvas [data]="getChartData(CHART_CONFIGS.t20WidesPowerPlay)"
+              [type]="'pie'"
+              baseChart>
+
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="basis-1/3">
+    <mat-card-header>
+      <mat-card-title>T20 Wides in Death</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <canvas [data]="getChartData(CHART_CONFIGS.t20WidesDeath)"
+              [type]="'pie'"
+              baseChart>
+
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="basis-1/3">
+    <mat-card-header>
+      <mat-card-title>T20 Wides All</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <canvas [data]="getChartData(CHART_CONFIGS.t20WidesAll)"
+              [type]="'pie'"
               baseChart>
 
       </canvas>

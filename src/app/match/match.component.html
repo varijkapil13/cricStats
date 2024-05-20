@@ -1,1 +1,45 @@
-<p>match works!</p>
+<div class="flex flex-row">
+  <mat-card class="basis-full">
+    <mat-card-header>
+      <mat-card-title>All Matches</mat-card-title>
+      <mat-card-subtitle>Data in other pages is available from these matches only</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <table [dataSource]="matchDataSource" mat-table matSort>
+
+        <ng-container matColumnDef="id">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> No.</th>
+          <td *matCellDef="let element" mat-cell> {{ element.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="team">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> Team</th>
+          <td *matCellDef="let element" mat-cell> {{ element.team }}</td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> Date</th>
+          <td *matCellDef="let element" mat-cell> {{ element.date | date }}</td>
+        </ng-container>
+        <ng-container matColumnDef="format">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> Format</th>
+          <td *matCellDef="let element" mat-cell> {{ element.format }}</td>
+        </ng-container>
+        <ng-container matColumnDef="location">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> Location</th>
+          <td *matCellDef="let element" mat-cell> {{ element.location }}</td>
+        </ng-container>
+        <ng-container matColumnDef="against">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> Against</th>
+          <td *matCellDef="let element" mat-cell> {{ element.against }}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header> Type</th>
+          <td *matCellDef="let element" mat-cell> {{ element.type }}</td>
+        </ng-container>
+
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

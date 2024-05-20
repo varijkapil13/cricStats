@@ -15,17 +15,12 @@
   </mat-toolbar>
   <mat-sidenav-container #sidenavContainer autosize>
     <mat-sidenav [opened]="isMobile ? 'false' : 'true'" [mode]="isMobile ? 'over' : 'side'">
+      <!--        for loop for routes from app.route.ts-->
       <mat-nav-list>
-        <a mat-list-item routerLink="/">
+        <a *ngFor="let route of routes" [routerLink]="route.path" mat-list-item>
           <span class="entry">
-            <mat-icon>house</mat-icon>
-            <span>Dashboard</span>
-          </span>
-        </a>
-        <a mat-list-item routerLink="stats">
-          <span class="entry">
-            <mat-icon>house</mat-icon>
-            <span>Average</span>
+            <mat-icon>{{ route.icon }}</mat-icon>
+            <span>{{ route.displayName }}</span>
           </span>
         </a>
       </mat-nav-list>

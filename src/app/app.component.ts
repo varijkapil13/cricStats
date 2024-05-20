@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -10,6 +10,8 @@ import {
 } from '@angular/material/sidenav';
 import { MatListItem, MatNavList } from '@angular/material/list';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { routes } from './app.routes';
+import { NgForOf } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +26,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
     MatNavList,
     MatListItem,
     MatSidenavContent,
+    NgForOf,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -46,4 +49,6 @@ export class AppComponent {
       this.sidenav.toggle();
     }
   }
+
+  protected readonly routes = routes;
 }
