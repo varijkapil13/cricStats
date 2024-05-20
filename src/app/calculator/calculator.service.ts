@@ -3,7 +3,7 @@ import { Bowler } from '../modal/Bowler';
 import { BowlerTableStats } from '../modal/BowlerTableStats';
 import { MatchInfo, OversInMatch } from '../modal/Match';
 import { BallBowled } from '../modal/BallBowled';
-import { BowlerChartStats } from '../modal/BowlerChartStats';
+import { ChartData } from 'chart.js';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +24,6 @@ export class CalculatorService {
         fiveWickets: this.calculateFiveWicketsForBowler(bowler, matches),
         fourWickets: this.calculateFourWicketsForBowler(bowler, matches),
         hatTrick: this.calculateHatTricksForBowler(bowler, matches),
-        innings: this.calculateNoOfInningsForBowler(bowler, matches),
         maidens: this.calculateMaidensForBowler(bowler, matches),
         noBalls: this.calculateNoBallsForBowler(bowler, matches),
         overs: this.calculateOversBowledForBowler(bowler, matches),
@@ -62,7 +61,6 @@ export class CalculatorService {
         fiveWickets: this.calculateFiveWicketsForBowler(bowler, matches),
         fourWickets: this.calculateFourWicketsForBowler(bowler, matches),
         hatTrick: this.calculateHatTricksForBowler(bowler, matches),
-        innings: this.calculateNoOfInningsForBowler(bowler, matches),
         maidens: this.calculateMaidensForBowler(bowler, matches),
         noBalls: this.calculateNoBallsForBowler(bowler, matches),
         overs: this.calculateOversBowledForBowler(bowler, matches),
@@ -84,30 +82,33 @@ export class CalculatorService {
       });
   }
 
-  convertStatsToChartData(stats: BowlerTableStats[]): BowlerChartStats[] {
-    return stats.map((stat) => {
-      return {
-        name: stat.bowlerName,
-        series: [
-          {
-            name: 'Economy',
-            value: stat.economy,
-          },
-          {
-            name: 'Wickets',
-            value: stat.wickets,
-          },
-          {
-            name: 'Dots',
-            value: stat.dots,
-          },
-          {
-            name: 'Runs',
-            value: stat.runs,
-          },
-        ],
-      };
-    });
+  convertStatsToChartData(stats: BowlerTableStats[]): ChartData<'bar'> {
+    const sortedStats = stats.sort(
+      (a: BowlerTableStats, b: BowlerTableStats) => {
+        return a.bowlerName.localeCompare(b.bowlerName);
+      },
+    );
+    return {
+      labels: sortedStats.map((stat) => stat.bowlerName),
+      datasets: [
+        {
+          data: sortedStats.map((stat) => stat.economy),
+          label: 'Economy',
+        },
+        {
+          data: sortedStats.map((stat) => stat.wickets),
+          label: 'Wickets',
+        },
+        {
+          data: sortedStats.map((stat) => stat.dots),
+          label: 'Dots',
+        },
+        {
+          data: sortedStats.map((stat) => stat.runs),
+          label: 'Runs',
+        },
+      ],
+    };
   }
 
   private calculateNoOfMatchesForBowler(
@@ -121,19 +122,6 @@ export class CalculatorService {
       });
     }).length;
   }
-
-  private calculateNoOfInningsForBowler(
-    bowler: Bowler,
-    matches: MatchInfo[],
-  ): number {
-    // find how many Match objects contain at least 1 ballsBowled from where playerName === bowler.initials
-    return matches.filter((match: MatchInfo) => {
-      return match.ballsBowled.some((ballBowled: BallBowled) => {
-        return ballBowled.bowler === bowler.initials;
-      });
-    }).length;
-  }
-
   private calculateRunsForBowler(bowler: Bowler, matches: MatchInfo[]): number {
     // sum of runs from oversInMatch where bowlerName === bowler.initials
     return matches.reduce((totalRuns, match) => {

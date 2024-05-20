@@ -2,7 +2,6 @@ export interface BowlerTableStats {
   id: string;
   bowlerName: string;
   matches: number;
-  innings: number;
   overs: number;
   runs: number;
   wickets: number;

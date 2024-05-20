@@ -6,7 +6,6 @@ import {
   MatCardSubtitle,
   MatCardTitle,
 } from '@angular/material/card';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {
   MatCell,
   MatCellDef,
@@ -23,11 +22,13 @@ import {
 import { BowlerTableStats } from '../modal/BowlerTableStats';
 import { CalculatorService } from '../calculator/calculator.service';
 import { MatSort, MatSortHeader, MatSortModule } from '@angular/material/sort';
-import { BowlerChartStats } from '../modal/BowlerChartStats';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { generateInfoForEachMatch } from '../modal/data/DataGenerator';
 import { MatchInfo } from '../modal/Match';
 import { bowlerData } from '../modal/data/bowlerData';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartData } from 'chart.js';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-stats',
@@ -38,7 +39,6 @@ import { bowlerData } from '../modal/data/bowlerData';
     MatCardHeader,
     MatCardTitle,
     MatCardSubtitle,
-    NgxChartsModule,
     MatTableModule,
     MatHeaderCell,
     MatCell,
@@ -53,36 +53,24 @@ import { bowlerData } from '../modal/data/bowlerData';
     MatSortModule,
     MatGridList,
     MatGridTile,
+    BaseChartDirective,
+    DecimalPipe,
   ],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
 })
 export class StatsComponent implements AfterViewInit {
-  view: [number, number] = [700, 400];
-
-  // options
-  showXAxis: boolean = true;
-  showYAxis: boolean = true;
-  gradient: boolean = false;
-  showLegend: boolean = true;
-  showXAxisLabel: boolean = true;
-  yAxisLabel: string = 'Stats';
-  showYAxisLabel: boolean = true;
-  xAxisLabel = 'Bowler';
-  colorScheme = 'cool';
-
   matchInfo: MatchInfo[];
   @ViewChild(MatSort) sort: MatSort;
   bowlerStats: BowlerTableStats[] = [];
   tableDataSource: MatTableDataSource<BowlerTableStats> =
     new MatTableDataSource();
   bowlerStatsFor6Overs: BowlerTableStats[] = [];
-  bowlerChartStatsFor6Overs: BowlerChartStats[] = [];
-  bowlerChartStats: BowlerChartStats[] = [];
+  bowlerChartStatsFor6Overs: ChartData<'bar'>;
+  bowlerChartStats: ChartData<'bar'>;
   displayedColumns: string[] = [
     'id',
     'matches',
-    'innings',
     'overs',
     'runs',
     'wickets',
@@ -120,17 +108,5 @@ export class StatsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.tableDataSource.sort = this.sort;
-  }
-
-  onSelect(data: any): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
-  }
-
-  onActivate(data: any): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
-
-  onDeactivate(data: any): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
 }
