@@ -99,10 +99,48 @@ export function generateChartData(config: ChartConfigType): ChartData {
       label: dataPoint.name,
     };
   });
+  let zeroValuesFromDataSets = removeZeroValuesFromDataSets(datasets);
+  let labels = sortedStats.map((stat) => stat.bowlerName);
+  let labelsCopy = JSON.parse(JSON.stringify(labels));
+  if (zeroValuesFromDataSets.zeroIndexes.length > 0) {
+    labelsCopy = labels.filter((label, index) => {
+      return !zeroValuesFromDataSets.zeroIndexes.includes(index);
+    });
+  }
   return {
-    labels: sortedStats.map((stat) => stat.bowlerName),
-    datasets: datasets,
+    labels: labelsCopy,
+    datasets: zeroValuesFromDataSets.datasets,
   };
+}
+
+function removeZeroValuesFromDataSets(
+  datasets: { data: any[]; label: string }[],
+): {
+  datasets: {
+    data: any[];
+    label: string;
+  }[];
+  zeroIndexes: number[];
+} {
+  // a dataset object can have multiple data arrays.
+  // if all the data arrays have value 0, at the same index, remove that index from all data arrays
+  let zeroIndexes: number[] = [];
+  const datasetsCopy = JSON.parse(JSON.stringify(datasets));
+  datasetsCopy.forEach((datasetsCopy: { data: any[]; label: string }) => {
+    datasetsCopy.data.forEach((data, index) => {
+      if (data === 0) {
+        zeroIndexes.push(index);
+      }
+    });
+  });
+  zeroIndexes = Array.from(new Set(zeroIndexes));
+  zeroIndexes.sort((a, b) => b - a);
+  zeroIndexes.forEach((index) => {
+    datasetsCopy.forEach((datasetsCopy: { data: any[]; label: string }) => {
+      datasetsCopy.data.splice(index, 1);
+    });
+  });
+  return { datasets: datasetsCopy, zeroIndexes };
 }
 
 function calculateNoOfMatchesForBowler(
