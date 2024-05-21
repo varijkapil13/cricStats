@@ -5,6 +5,8 @@ import { DecimalPipe } from '@angular/common';
 import { ChartConfigType } from '../types/ChartConfigType';
 import { CHART_CONFIGS } from '../types/ConfigConstants';
 import { generateChartData } from '../calculator/calculator.service';
+import { Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-stats',
@@ -16,7 +18,13 @@ import { generateChartData } from '../calculator/calculator.service';
 export class StatsComponent {
   protected readonly CHART_CONFIGS = CHART_CONFIGS;
 
-  constructor() {}
+  constructor() {
+    //   Show data labels on the chartjs v4
+    Chart.register(ChartDataLabels);
+    Chart.defaults.set('plugins.datalabels', {
+      formatter: Math.floor,
+    });
+  }
 
   getChartData(chartConfig: ChartConfigType) {
     return generateChartData(chartConfig);
