@@ -6,6 +6,7 @@ import { MatchComponent } from './match/match.component';
 export interface CustomRoute extends Route {
   icon: string;
   displayName: string;
+  params?: { [key: string]: string };
 }
 
 export declare type CustomRoutes = CustomRoute[];
@@ -18,9 +19,17 @@ export const routes: CustomRoutes = [
     displayName: 'Stats',
   },
   {
-    path: 't20-charts',
+    path: 'charts',
     component: StatsComponent,
     icon: 'bolt',
     displayName: 'T20 Charts',
+    params: { format: 'T20' },
+  },
+  {
+    path: 'charts',
+    component: StatsComponent,
+    icon: 'bolt',
+    displayName: 'ODI Charts',
+    params: { format: 'ODI' },
   },
 ];

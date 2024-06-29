@@ -1,6 +1,6 @@
 import { Bowler } from '../modal/Bowler';
 import { BowlerTableStats } from '../modal/BowlerTableStats';
-import { MatchInfo, OversInMatch } from '../modal/Match';
+import { MatchFormat, MatchInfo, OversInMatch } from '../modal/Match';
 import { BallBowled } from '../modal/BallBowled';
 import { ChartData } from 'chart.js';
 import { ChartConfigType } from '../types/ChartConfigType';
@@ -38,7 +38,13 @@ export function generateBowlerStats(
         ball.over >= powerplayRange.start && ball.over <= powerplayRange.end
       );
     });
+    match.oversInMatch = match.oversInMatch.filter((over: OversInMatch) => {
+      return (
+        over.over >= powerplayRange.start && over.over <= powerplayRange.end
+      );
+    });
   });
+
   let bowlerStats: BowlerTableStats[] = [];
   for (const bowler of bowlers) {
     bowlerStats.push({
@@ -72,10 +78,14 @@ export function generateBowlerStats(
 /**
  * Generate chart data for bowler stats
  * @param config
+ * @param matchFormat
  * @returns ChartData object for bowler stats chart component to render chart
  *
  */
-export function generateChartData(config: ChartConfigType): ChartData {
+export function generateChartData(
+  config: ChartConfigType,
+  matchFormat: MatchFormat,
+): ChartData {
   const matchInfo = generateInfoForEachMatch();
   const bowlerStatsConfig: BowlerStatsConfig = {
     format: config.format,
@@ -124,23 +134,43 @@ function removeZeroValuesFromDataSets(
 } {
   // a dataset object can have multiple data arrays.
   // if all the data arrays have value 0, at the same index, remove that index from all data arrays
-  let zeroIndexes: number[] = [];
+  let zeroIndexes = {};
   const datasetsCopy = JSON.parse(JSON.stringify(datasets));
-  datasetsCopy.forEach((datasetsCopy: { data: any[]; label: string }) => {
-    datasetsCopy.data.forEach((data, index) => {
-      if (data === 0) {
-        zeroIndexes.push(index);
-      }
-    });
+  datasetsCopy.forEach(
+    (datasetsCopy: { data: any[]; label: string }, indexMain: number) => {
+      datasetsCopy.data.forEach((data, index) => {
+        if (data === 0) {
+          // @ts-ignore
+          if (zeroIndexes[indexMain] === undefined) {
+            // @ts-ignore
+            zeroIndexes[indexMain] = [];
+          }
+          // @ts-ignore
+          zeroIndexes[indexMain].push(index);
+        }
+      });
+    },
+  );
+  // go through all the zeroIndexes arrays and find the indexes that are common to all arrays
+  let zeroIndexesArray = Object.values(zeroIndexes);
+  // create a flat map of all zeroIndexes
+  let zeroIndexesFlat = zeroIndexesArray.flat();
+  // from the  flat map only keep the values that are duplicated
+  zeroIndexesFlat = zeroIndexesFlat.filter((value, index, self) => {
+    return self.indexOf(value) !== index;
   });
-  zeroIndexes = Array.from(new Set(zeroIndexes));
-  zeroIndexes.sort((a, b) => b - a);
-  zeroIndexes.forEach((index) => {
+  // now create a set of all zeroIndexes
+  zeroIndexesFlat = Array.from(new Set(zeroIndexesFlat));
+  // @ts-ignore
+  zeroIndexesFlat.sort((a, b) => b - a);
+  zeroIndexesFlat.forEach((index) => {
     datasetsCopy.forEach((datasetsCopy: { data: any[]; label: string }) => {
+      // @ts-ignore
       datasetsCopy.data.splice(index, 1);
     });
   });
-  return { datasets: datasetsCopy, zeroIndexes };
+  // @ts-ignore
+  return { datasets: datasetsCopy, zeroIndexes: zeroIndexesFlat };
 }
 
 function calculateNoOfMatchesForBowler(

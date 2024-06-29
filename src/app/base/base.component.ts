@@ -1,11 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { MatCardModule } from '@angular/material/card';
-import { ChartConfigType } from '../types/ChartConfigType';
-import {
-  generateBowlerStats,
-  generateChartData,
-} from '../calculator/calculator.service';
+import { generateBowlerStats } from '../calculator/calculator.service';
 import { CHART_CONFIGS, TABLE_CONFIGS } from '../types/ConfigConstants';
 import { DecimalPipe } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -82,9 +78,5 @@ export class BaseComponent implements AfterViewInit {
       bowlerConfig,
     );
     this.odiDataSource = new MatTableDataSource(bowlerStats);
-  }
-
-  public getChartData(config: ChartConfigType) {
-    return generateChartData(config);
   }
 }

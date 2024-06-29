@@ -4,7 +4,7 @@
       <mat-card-title>Powerplay</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20PowerPlay)"
+      <canvas [data]="getChartData(getConfigValue('powerplay'))"
               [type]="'bar'"
               baseChart>
 
@@ -16,7 +16,7 @@
       <mat-card-title>Death</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20Death)"
+      <canvas [data]="getChartData(getConfigValue('death'))"
               [type]="'bar'"
               baseChart>
 
@@ -30,7 +30,7 @@
       <mat-card-title>All Overs</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20All)"
+      <canvas [data]="getChartData(getConfigValue('all'))"
               [type]="'bar'"
               baseChart>
 
@@ -44,7 +44,7 @@
       <mat-card-title>Wides in Powerplay</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20WidesPowerPlay)"
+      <canvas [data]="getChartData(getConfigValue('widesPowerPlay'))"
               [type]="'pie'"
               baseChart>
 
@@ -56,7 +56,7 @@
       <mat-card-title>Wides in Death</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20WidesDeath)"
+      <canvas [data]="getChartData(getConfigValue('widesDeath'))"
               [type]="'pie'"
               baseChart>
 
@@ -68,7 +68,7 @@
       <mat-card-title>Wides All</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20WidesAll)"
+      <canvas [data]="getChartData(getConfigValue('widesAll'))"
               [type]="'pie'"
               baseChart>
 
@@ -82,7 +82,7 @@
       <mat-card-title>Runs in Powerplay</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20RunsInPowerPlay)"
+      <canvas [data]="getChartData(getConfigValue('runsInPowerPlay'))"
               [type]="'pie'"
               baseChart>
 
@@ -94,7 +94,7 @@
       <mat-card-title>Runs in Death</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20RunsInDeath)"
+      <canvas [data]="getChartData(getConfigValue('runsInDeath'))"
               [type]="'pie'"
               baseChart>
 
@@ -106,7 +106,7 @@
       <mat-card-title>Runs All</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <canvas [data]="getChartData(CHART_CONFIGS.t20RunsInAll)"
+      <canvas [data]="getChartData(getConfigValue('runsInAll'))"
               [type]="'pie'"
               baseChart>
 

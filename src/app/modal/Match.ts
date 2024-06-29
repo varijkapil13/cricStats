@@ -10,6 +10,12 @@ export interface IMatch {
   team: string;
 }
 
+export enum MatchFormat {
+  T20 = 'T20',
+  ODI = 'ODI',
+  TEST = 'TEST',
+}
+
 interface IMatchInfo {
   match: IMatch;
   ballsBowled: BallBowled[];

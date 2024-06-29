@@ -17,7 +17,7 @@
     <mat-sidenav [opened]="isMobile ? 'false' : 'true'" [mode]="isMobile ? 'over' : 'side'">
       <!--        for loop for routes from app.route.ts-->
       <mat-nav-list>
-        <a *ngFor="let route of routes" [routerLink]="route.path" mat-list-item>
+        <a *ngFor="let route of routes" [queryParams]="route.params" [routerLink]="route.path" mat-list-item>
           <span class="entry">
             <mat-icon>{{ route.icon }}</mat-icon>
             <span>{{ route.displayName }}</span>
